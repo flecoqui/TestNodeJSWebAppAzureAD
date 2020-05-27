@@ -1,7 +1,7 @@
 
 #usage install-webapp-azuread-windows.ps1 resourceGroupName prefixName tenantName azureADSubscriptionID azureSubscriptionID webAppSku 
 # az group create -n TestFunctionNodeJSRestAPIrg -l eastus2
-# install-webapp-azuread-windows.ps1 TestFunctionNodeJSRestAPIrg testwebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
+# install-webapp-azuread-windows.ps1 TestNodeJSWebAppAzureADrg testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
 
 param
 (
@@ -87,8 +87,9 @@ function Get-PublicIP($file)
 #$azureSubscriptionID = 'e5c9fc83-fbd0-4368-9cb6-1b5823479b6d'
 $appName = $prefixName + "web"
 $appUri = "https://" + $appName + ".azurewebsites.net/"
-$dnsName = $appName + ".azurewebsites.net
-$apiUri = "api://" + $appName 
+$dnsName = $appName + ".azurewebsites.net"
+$appGuid = '12345678-34cd-498f-9d9f-123456781237'
+$apiUri = "api://" + $appGuid 
 $appRedirectUri = $appUri + "signin-oidc"
 $appDeploymentName =$appName + "dep"
 $githubrepo = 'https://github.com/flecoqui/TestNodeJSWebAppAzureAD.git'
@@ -102,10 +103,14 @@ WriteLog ("az account set --subscription " +  $azureADSubscriptionID)
 az account set --subscription $azureADSubscriptionID
 Write-Output  '[{ "additionalProperties": null,"resourceAccess": [{"additionalProperties": null, "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d", "type": "Scope"}],"resourceAppId": "00000003-0000-0000-c000-000000000000"}]' > ./manifestaccess.json
 WriteLog ("Removing the Application (if exists)")
-az ad app delete --id $apiUri
+#WriteLog ("az ad app delete --id " + $appGuid)
+#az ad app delete --id $apiUri
 WriteLog ("Registering Application")
-az ad app create  --display-name $appName  --native-app false --identifier-uris  $apiUri --reply-urls $appRedirectUri --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true 
+WriteLog ("az ad app create --id " + $appGuid + "  --display-name " + $appName +" --native-app false --identifier-uris " + $apiUri + " --reply-urls " + $appRedirectUri + " --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true ")
+az ad app create  --id $appGuid --display-name $appName  --native-app false --identifier-uris  $apiUri --reply-urls $appRedirectUri --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true 
+WriteLog ("az ad app update --id " + $apiUri + " --set logoutUrl=" + $appUri)
 az ad app update --id $apiUri --set logoutUrl=$appUri
+WriteLog ("az ad app show --id " + $apiUri + " --query appId --output tsv > appid.txt")
 az ad app show --id $apiUri --query appId --output tsv > appid.txt
 $appID = Get-Content .\appid.txt -Raw 
 az ad app credential reset --id $apiUri --append  > apppassword.txt
@@ -122,8 +127,10 @@ az account set --subscription $azureSubscriptionID
 
 WriteLog ("Installation script is starting for resource group: " + $resourceGroupName + " with prefixName: " + $prefixName )
 WriteLog ("Creating Web App supporting Azure AD Authentication") 
-az group deployment create -g $resourceGroupName -n $appDeploymentName --template-file azuredeploy.json --parameters namePrefix=$prefixName webAppSku=$webAppSku  configClientID=$appID configClientSecret=$appPassword  configTenantName=$tenantName configRedirectUrl=$appRedirectUri configSignOutUrl=$appUri    --verbose -o json 
-az group deployment show -g $resourceGroupName -n $acrDeploymentName --query properties.outputs
+WriteLog ("az deployment group create -g " + $resourceGroupName + " -n " + $appDeploymentName + " --template-file azuredeploy.json --parameter namePrefix="+$prefixName+" webAppSku="+$webAppSku+" configClientID=" + $appID + " configClientSecret=" + $appPassword + "  configTenantName=" + $tenantName + " configRedirectUrl=" + $appRedirectUri + " configSignOutUrl=" + $appUri + "   --verbose -o json ")
+az deployment group create -g $resourceGroupName -n $appDeploymentName --template-file azuredeploy.json --parameter namePrefix=$prefixName webAppSku=$webAppSku  configClientID=$appID configClientSecret=$appPassword  configTenantName=$tenantName configRedirectUrl=$appRedirectUri configSignOutUrl=$appUri    --verbose -o json 
+WriteLog ("az deployment group show -g " + $resourceGroupName + " -n " + $appDeploymentName + " --query properties.outputs")
+az deployment group show -g $resourceGroupName -n $appDeploymentName --query properties.outputs
 
 WriteLog ("Public DNS Name: " +$dnsName) 
 
