@@ -1,0 +1,33 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": {
+      "value": "testwebapp"
+    },
+    "webAppSku": {
+      "value": "S1"
+    },
+    "repoURL": {
+      "value": "https://github.com/flecoqui/TestNodeJSWebAppAzureAD.git"
+    },
+    "repoBranch": {
+      "value": "master"
+    },
+    "configClientID": {
+      "value": "f0987f99-8aa7-47c7-9626-ec45413764b8"
+    },
+    "configClientSecret": {
+      "value": ".5.4RtCssjs93CnH~dDPZxFnC~_7X20pLY"
+    },
+    "configTenantName": {
+      "value": "M365x175592"
+    },
+    "configRedirectUrl": {
+      "value": "https://testwebappweb.azurewebsites.net/signin-oidc"
+    },
+    "configSignOutUrl": {
+      "value": "https://testwebappweb.azurewebsites.net/"
+    }
+  }
+}

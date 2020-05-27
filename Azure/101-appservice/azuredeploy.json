@@ -1,0 +1,274 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Service name prefix must only contain lowercase letters, digits or dashes, cannot use dash as the first two or last one characters, cannot contain consecutive dashes, and is limited between 2 and 50 characters in length."
+      }
+    },
+    "webAppSku": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "Y1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "The SKU of the Web service you want to create."
+      }
+    },
+    "repoURL": {
+      "type": "string",
+      "defaultValue": "https://github.com/flecoqui/TestFunctionNodeJSRestAPI.git",
+      "metadata": {
+        "description": "The URL for the GitHub repository that contains the project to deploy."
+      }
+    },
+    "repoBranch": {
+      "type": "string",
+      "defaultValue": "master",
+      "metadata": {
+        "description": "The branch of the GitHub repository to use."
+      }
+    },
+    "configClientID": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Client ID used for the Azure AD authentication."
+      }
+    },
+    "configClientSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Client Secret used for the Azure AD authentication."
+      }
+    },
+    "configTenantName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Tenant Name used for the Azure AD authentication."
+      }
+    },
+    "configRedirectUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Redicrect URI used for the Azure AD authentication."
+      }
+    },
+    "configSignOutUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SignOut URI used for the Azure AD authentication."
+      }
+    }
+
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "appServicePlanName": "[concat(parameters('namePrefix'), 'webplan')]",
+    "webAppName": "[concat(parameters('namePrefix'), 'web')]"
+  },
+  "resources": [
+
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "[toLower(parameters('webAppSku'))]",
+        "capacity": 1
+      },
+      "kind": "linux",
+      "name": "[variables('appServicePlanName')]",
+      "apiVersion": "2018-02-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "perSiteScaling": false,
+        "maximumElasticWorkerCount": 1,
+        "isSpot": false,
+        "reserved": true,
+        "isXenon": false,
+        "hyperV": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "app,linux",
+      "name": "[variables('webAppName')]",
+      "apiVersion": "2018-02-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+            {
+                "name": "[concat(variables('webAppName'),'.azurewebsites.net')]",
+                "sslState": "Disabled",
+                "hostType": "Standard"
+            },
+            {
+                "name": "[concat(variables('webAppName'),'.scm.azurewebsites.net')]",
+                "sslState": "Disabled",
+                "hostType": "Repository"
+            }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "CLIENT_ID",
+              "value": "[parameters('configClientID')]"
+            },
+                        {
+              "name": "CLIENT_SECRET",
+              "value": "[parameters('configClientSecret')]"
+            },
+            {
+              "name": "REDIRECT_URL",
+              "value": "[parameters('configRedirectUrl')]"
+            },
+                        {
+              "name": "SIGNOUT_URL",
+              "value": "[parameters('configSignOutUrl')]"
+            },
+                        {
+              "name": "TENANT_NAME",
+              "value": "[parameters('configTenantName')]"
+            }
+          ]
+        },
+        "reserved": true,
+        "isXenon": false,
+        "hyperV": false,
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": false,
+        "redundancyMode": "None"
+      },
+      "resources": [
+        {
+          "type": "config",
+          "apiVersion": "2018-02-01",
+          "name": "web",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+          ],
+          "properties": {
+            "numberOfWorkers": 1,
+            "defaultDocuments": [
+              "Default.htm",
+              "Default.html",
+              "Default.asp",
+              "index.htm",
+              "index.html",
+              "iisstart.htm",
+              "default.aspx",
+              "index.php",
+              "hostingstart.html"
+            ],
+            "netFrameworkVersion": "v4.0",
+            "linuxFxVersion": "NODE|lts",
+            "requestTracingEnabled": false,
+            "remoteDebuggingEnabled": false,
+            "httpLoggingEnabled": true,
+            "logsDirectorySizeLimit": 35,
+            "detailedErrorLoggingEnabled": false,
+            "publishingUsername": "$TestWebNodeApp",
+            "scmType": "None",
+            "use32BitWorkerProcess": true,
+            "webSocketsEnabled": false,
+            "alwaysOn": false,
+            "managedPipelineMode": "Integrated",
+            "virtualApplications": [
+                {
+                    "virtualPath": "/",
+                    "physicalPath": "site\\wwwroot",
+                    "preloadEnabled": false
+                }
+            ],
+            "loadBalancing": "LeastRequests",
+            "experiments": {
+                "rampUpRules": []
+            },
+            "autoHealEnabled": false,
+            "localMySqlEnabled": false,
+            "ipSecurityRestrictions": [
+                {
+                    "ipAddress": "Any",
+                    "action": "Allow",
+                    "priority": 1,
+                    "name": "Allow all",
+                    "description": "Allow all access"
+                }
+            ],
+            "scmIpSecurityRestrictions": [
+                {
+                    "ipAddress": "Any",
+                    "action": "Allow",
+                    "priority": 1,
+                    "name": "Allow all",
+                    "description": "Allow all access"
+                }
+            ],
+            "scmIpSecurityRestrictionsUseMain": false,
+            "http20Enabled": false,
+            "minTlsVersion": "1.2",
+            "ftpsState": "AllAllowed",
+            "reservedInstanceCount": 0
+          }
+        },
+        {
+          "apiVersion": "2018-02-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('webAppName'))]",
+            "[concat('Microsoft.Web/Sites/', variables('webAppName'),'/config/web')]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('repoURL')]",
+            "branch": "[parameters('repoBranch')]",
+            "IsManualIntegration": true
+          }
+        }
+      ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "curlCmdAzWeb1": {
+      "type": "string",
+      "value": "[concat('curl -d ''{\"name\":\"0123456789\"}'' -H \"Content-Type: application/json\"  -X POST   https://',variables('webAppName'),'.azurewebsites.net/api/values')]"
+    },
+    "curlCmdAzWeb2": {
+      "type": "string",
+      "value": "[concat('curl -H \"Content-Type: application/json\"  -X GET   https://',variables('webAppName'),'.azurewebsites.net/api/test')]"
+    }
+  }
+}
