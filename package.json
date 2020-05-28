@@ -17,6 +17,11 @@
     "method-override": "^2.3.6",
     "mongoose": "^5.9.16",
     "passport": "*",
-    "passport-azure-ad": "^4.2.1"
+    "passport-azure-ad": "^4.2.1",
+    "base64-url": ">=2.0.0",
+    "morgan": ">=1.9.1",
+    "negotiator": ">=0.6.1",
+    "fresh": ">=0.5.2",
+    "mime": ">=1.4.1"
   }
 }
