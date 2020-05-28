@@ -93,8 +93,8 @@ $appGuid = [guid]::NewGuid()
 $apiUri = "api://" + $appGuid 
 $appRedirectUri = $appUri + "signin-oidc"
 $appDeploymentName =$appName + "dep"
-$githubrepo = 'https://github.com/flecoqui/TestNodeJSWebAppAzureAD.git'
-$githubbranch = 'master'
+#$githubrepo = 'https://github.com/flecoqui/TestNodeJSWebAppAzureAD.git'
+#$githubbranch = 'master'
 
 WriteLog ("Installation script is starting for resource group: " + $resourceGroupName + " with prefixName: " + $prefixName + " azureADSubscriptionID: " + $azureADSubscriptionID )
 WriteLog ("Login to Azure AD")
@@ -103,7 +103,7 @@ az login
 WriteLog ("az account set --subscription " +  $azureADSubscriptionID)
 az account set --subscription $azureADSubscriptionID
 Write-Output  '[{ "additionalProperties": null,"resourceAccess": [{"additionalProperties": null, "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d", "type": "Scope"}],"resourceAppId": "00000003-0000-0000-c000-000000000000"}]' > ./manifestaccess.json
-WriteLog ("Removing the Application (if exists)")
+#WriteLog ("Removing the Application (if exists)")
 #WriteLog ("az ad app delete --id " + $appGuid)
 #az ad app delete --id $apiUri
 WriteLog ("Registering Application for id: " + $appGuid)
