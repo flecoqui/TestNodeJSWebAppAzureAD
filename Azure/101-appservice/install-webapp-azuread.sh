@@ -175,7 +175,7 @@ appID=$(Get-FirstLine ./appid.txt)
 # appID=$appID.replace("`n","").replace("`r","")
 az ad app credential reset --id $apiUri --append  > apppassword.txt
 appPassword=$(Get-Password ./apppassword.txt) 
-WriteLog ("Parameters to deploy the Web App - AppId: " + $appID + " Password: " + $appPassword + " apiUri: " + $apiUri + " redirectUri: " + $appRedirectUri + " logoutUri: " + $appUri)
+WriteLog "Parameters to deploy the Web App - AppId: "$appID" Password: "$appPassword" apiUri: "$apiUri" redirectUri: "$appRedirectUri" logoutUri: "$appUri
 pause
 
 
@@ -210,5 +210,3 @@ WriteLog "Installation completed !"
 
 fi
 exit 0 
-
-
