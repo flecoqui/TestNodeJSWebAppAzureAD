@@ -34,8 +34,9 @@ function Get-FirstLine()
         local file=$1
 
         while read p; do
-                echo $p
-                return
+#                echo $p
+ 				echo $p|tr -d '\n'
+               return
         done < $file
 		echo ''
 }
@@ -52,7 +53,8 @@ function Get-Password()
 		declare -a array=($(echo $p | tr ':' ' '| tr ',' ' '| tr '"' ' '))
 		if [ ${#array[@]} > 1 ]; then
 		  	if [ ${array[0]} = "password" ]; then
-				echo ${array[1]}
+#				echo ${array[1]}
+				echo ${array[1]}|tr -d '\n'
 				return
 			fi
 		fi
@@ -143,7 +145,8 @@ appName=$prefixName'web'
 appUri='https://'$appName'.azurewebsites.net/'
 dnsName=$appName'.azurewebsites.net'
 appGuid='12345678-34cd-498f-9d9f-123456781237'
-appGuid=`uuidgen`
+uuidgen > ./newguid.txt
+appGuid=$(Get-FirstLine ./newguid.txt) 
 apiUri='api://'$appGuid 
 appRedirectUri=$appUri'signin-oidc'
 appDeploymentName=$appName'dep'
