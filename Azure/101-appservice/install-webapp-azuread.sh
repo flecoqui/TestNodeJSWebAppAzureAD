@@ -14,6 +14,8 @@ azureADSubscriptionID=$5
 azureSubscriptionID=$6
 webAppSku=$7
 
+# ./install-webapp-azuread.sh TestNodeJSWebAppAzureADrg easus2 testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
+
 #######################################################
 #- function used to writelog in a log file
 #######################################################
@@ -135,8 +137,8 @@ then
     exit 1 
 else
 
-## $azureADSubscriptionID = 'faa1b9e5-22ff-4238-8fb5-5a4d73c49d47'
-## $azureSubscriptionID = 'e5c9fc83-fbd0-4368-9cb6-1b5823479b6d'
+## azureADSubscriptionID = 'faa1b9e5-22ff-4238-8fb5-5a4d73c49d47'
+## azureSubscriptionID = 'e5c9fc83-fbd0-4368-9cb6-1b5823479b6d'
 appName=$prefixName'web'
 appUri='https://'$appName'.azurewebsites.net/'
 dnsName=$appName'.azurewebsites.net'
@@ -145,8 +147,9 @@ appGuid=`uuidgen`
 apiUri='api://'$appGuid 
 appRedirectUri=$appUri'signin-oidc'
 appDeploymentName=$appName'dep'
-## $githubrepo = 'https://github.com/flecoqui/TestNodeJSWebAppAzureAD.git'
-## $githubbranch = 'master'
+
+## githubrepo = 'https://github.com/flecoqui/TestNodeJSWebAppAzureAD.git'
+## githubbranch = 'master'
 
 
 WriteLog "Installation script is starting for resource group: "$resourceGroupName" with prefixName: "$prefixName" azureADSubscriptionID: "$azureADSubscriptionID 
@@ -156,9 +159,11 @@ az login
 WriteLog "az account set --subscription "$azureADSubscriptionID
 az account set --subscription $azureADSubscriptionID
 echo  '[{ "additionalProperties": null,"resourceAccess": [{"additionalProperties": null, "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d", "type": "Scope"}],"resourceAppId": "00000003-0000-0000-c000-000000000000"}]' > ./manifestaccess.json
-#WriteLog "Removing the Application (if exists)"
-#WriteLog "az ad app delete --id "$appGuid
-#az ad app delete --id $apiUri
+
+## WriteLog "Removing the Application"
+## WriteLog "az ad app delete --id "$appGuid
+### az ad app delete --id $apiUri
+
 WriteLog "Registering Application for id: " + $appGuid
 WriteLog "az ad app create --id "$appGuid"  --display-name "$appName" --native-app false --identifier-uris "$apiUri" --reply-urls "$appRedirectUri" --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true "
 az ad app create  --id $appGuid --display-name $appName  --native-app false --identifier-uris  $apiUri --reply-urls $appRedirectUri --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true 
