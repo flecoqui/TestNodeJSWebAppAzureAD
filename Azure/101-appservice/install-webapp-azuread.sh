@@ -195,7 +195,7 @@ az group create \
 
 WriteLog "Installation script is starting for resource group: "$resourceGroupName" with prefixName: "$prefixName 
 WriteLog "Creating Web App supporting Azure AD Authentication" 
-WriteLog "az deployment group create -g "$resourceGroupName" -n "$appDeploymentName" --template-file azuredeploy.json --parameter namePrefix="$prefixName" webAppSku="$webAppSku" configClientID="$appID" configClientSecret="$appPassword"  configTenantName="$tenantName" configRedirectUrl="$appRedirectUri" configSignOutUrl="$appUri"   --verbose -o json "
+WriteLog "az deployment group create -g "$resourceGroupName" -n "$appDeploymentName" --template-file azuredeploy.json --parameter namePrefix="$prefixName" webAppSku="$webAppSku" configClientID="$appID" configTenantName="$tenantName" configRedirectUrl="$appRedirectUri" configSignOutUrl="$appUri"   configClientSecret="$appPassword"    --verbose -o json "
 az deployment group create -g $resourceGroupName -n $appDeploymentName --template-file azuredeploy.json --parameter namePrefix=$prefixName webAppSku=$webAppSku   configClientSecret=$appPassword  configTenantName=$tenantName configRedirectUrl=$appRedirectUri configSignOutUrl=$appUri    configClientID=$appID --verbose -o json 
 WriteLog "az deployment group show -g "$resourceGroupName" -n "$appDeploymentName" --query properties.outputs"
 az deployment group show -g $resourceGroupName -n $appDeploymentName --query properties.outputs
@@ -204,7 +204,7 @@ WriteLog "Public DNS Name: " $dnsName
 
 WriteLog "curl -d '{\""name\"":\""0123456789\""}' -H \""Content-Type: application/json\""  -X POST   http://"$dnsName"/api/values"
 
-writelog "Open the following url with your browser to test the authentication: https://"$dnsName"/"
+writeLog "Open the following url with your browser to test the authentication: https://"$dnsName"/"
 WriteLog "Installation completed !" 
 
 
