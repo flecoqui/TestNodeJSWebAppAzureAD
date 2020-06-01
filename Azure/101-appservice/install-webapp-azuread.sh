@@ -196,7 +196,7 @@ az group create \
 WriteLog "Installation script is starting for resource group: "$resourceGroupName" with prefixName: "$prefixName 
 WriteLog "Creating Web App supporting Azure AD Authentication" 
 WriteLog "az deployment group create -g "$resourceGroupName" -n "$appDeploymentName" --template-file azuredeploy.json --parameter namePrefix="$prefixName" webAppSku="$webAppSku" configClientID="$appID" configTenantName="$tenantName" configRedirectUrl="$appRedirectUri" configSignOutUrl="$appUri"   configClientSecret="$appPassword"    --verbose -o json "
-az deployment group create -g $resourceGroupName -n $appDeploymentName --template-file azuredeploy.json --parameter namePrefix=$prefixName webAppSku=$webAppSku   configClientSecret=$appPassword  configTenantName=$tenantName configRedirectUrl=$appRedirectUri configSignOutUrl=$appUri    configClientID=$appID --verbose -o json 
+az deployment group create -g $resourceGroupName -n $appDeploymentName --template-file azuredeploy.json --parameter namePrefix=$prefixName webAppSku=$webAppSku   configTenantName=$tenantName configRedirectUrl=$appRedirectUri configSignOutUrl=$appUri    configClientID=$appID configClientSecret=$appPassword   --verbose -o json 
 WriteLog "az deployment group show -g "$resourceGroupName" -n "$appDeploymentName" --query properties.outputs"
 az deployment group show -g $resourceGroupName -n $appDeploymentName --query properties.outputs
 
