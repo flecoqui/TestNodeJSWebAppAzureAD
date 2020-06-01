@@ -164,7 +164,7 @@ echo  '[{ "additionalProperties": null,"resourceAccess": [{"additionalProperties
 ## WriteLog "az ad app delete --id "$appGuid
 ### az ad app delete --id $apiUri
 
-WriteLog "Registering Application for id: " + $appGuid
+WriteLog "Registering Application for id: "$appGuid
 WriteLog "az ad app create --id "$appGuid"  --display-name "$appName" --native-app false --identifier-uris "$apiUri" --reply-urls "$appRedirectUri" --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true "
 az ad app create  --id $appGuid --display-name $appName  --native-app false --identifier-uris  $apiUri --reply-urls $appRedirectUri --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true 
 WriteLog "az ad app update --id "$apiUri" --set logoutUrl="$appUri
@@ -176,13 +176,13 @@ appID=$(Get-FirstLine ./appid.txt)
 az ad app credential reset --id $apiUri --append  > apppassword.txt
 appPassword=$(Get-Password ./apppassword.txt) 
 WriteLog "Parameters to deploy the Web App - AppId: "$appID" Password: "$appPassword" apiUri: "$apiUri" redirectUri: "$appRedirectUri" logoutUri: "$appUri
-pause
+read -p "Press any key to continue"
 
 
 WriteLog "Login to Azure Subscription"
 WriteLog "az login"
 az login
-WriteLog "az account set --subscription "  $azureSubscriptionID
+WriteLog "az account set --subscription "$azureSubscriptionID
 az account set --subscription $azureSubscriptionID
 
 WriteLog "Creating Resource Group: $resourceGroupName"
@@ -193,11 +193,11 @@ az group create \
     --location $region \
     --output table
 
-WriteLog "Installation script is starting for resource group: "  $resourceGroupName  " with prefixName: "  $prefixName 
+WriteLog "Installation script is starting for resource group: "$resourceGroupName" with prefixName: "$prefixName 
 WriteLog "Creating Web App supporting Azure AD Authentication" 
-WriteLog "az deployment group create -g " $resourceGroupName " -n " $appDeploymentName  " --template-file azuredeploy.json --parameter namePrefix=" $prefixName " webAppSku=" $webAppSku " configClientID=" $appID " configClientSecret=" $appPassword "  configTenantName=" $tenantName " configRedirectUrl=" $appRedirectUri " configSignOutUrl=" $appUri "   --verbose -o json "
+WriteLog "az deployment group create -g "$resourceGroupName" -n "$appDeploymentName" --template-file azuredeploy.json --parameter namePrefix="$prefixName" webAppSku="$webAppSku" configClientID="$appID" configClientSecret="$appPassword"  configTenantName="$tenantName" configRedirectUrl="$appRedirectUri" configSignOutUrl="$appUri"   --verbose -o json "
 az deployment group create -g $resourceGroupName -n $appDeploymentName --template-file azuredeploy.json --parameter namePrefix=$prefixName webAppSku=$webAppSku   configClientSecret=$appPassword  configTenantName=$tenantName configRedirectUrl=$appRedirectUri configSignOutUrl=$appUri    configClientID=$appID --verbose -o json 
-WriteLog "az deployment group show -g " $resourceGroupName " -n " $appDeploymentName " --query properties.outputs"
+WriteLog "az deployment group show -g "$resourceGroupName" -n "$appDeploymentName" --query properties.outputs"
 az deployment group show -g $resourceGroupName -n $appDeploymentName --query properties.outputs
 
 WriteLog "Public DNS Name: " $dnsName
