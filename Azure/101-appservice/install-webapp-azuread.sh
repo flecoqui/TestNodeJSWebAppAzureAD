@@ -171,6 +171,8 @@ WriteLog "Registering Application for id: "$appGuid
 WriteLog "az ad app create --id "$appGuid"  --display-name "$appName" --native-app false --identifier-uris "$apiUri" --reply-urls "$appRedirectUri" --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true "
 az ad app create  --id $appGuid --display-name $appName  --native-app false --identifier-uris  $apiUri --reply-urls $appRedirectUri --required-resource-accesses '@manifestaccess.json' --oauth2-allow-implicit-flow true --available-to-other-tenants true 
 WriteLog "az ad app update --id "$apiUri" --set logoutUrl="$appUri
+## wait two seconds before updating the new registered app
+sleep 2
 az ad app update --id $apiUri --set logoutUrl=$appUri
 WriteLog "az ad app show --id "$apiUri" --query appId --output tsv > appid.txt"
 az ad app show --id $apiUri --query appId --output tsv > appid.txt
@@ -205,9 +207,9 @@ az deployment group show -g $resourceGroupName -n $appDeploymentName --query pro
 
 WriteLog "Public DNS Name: " $dnsName
 
-WriteLog "curl -d '{\""name\"":\""0123456789\""}' -H \""Content-Type: application/json\""  -X POST   http://"$dnsName"/api/values"
+##WriteLog "curl -d '{\""name\"":\""0123456789\""}' -H \""Content-Type: application/json\""  -X POST   http://"$dnsName"/api/values"
 
-writeLog "Open the following url with your browser to test the authentication: https://"$dnsName"/"
+WriteLog "Open the following url with your browser to test the authentication: https://"$dnsName"/"
 WriteLog "Installation completed !" 
 
 
