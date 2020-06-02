@@ -67,6 +67,7 @@ All the parameters required for the Azure AD authentication can be automatically
 
 Those files are called using the following parameters:
 * **Azure resource group :** The Azure Resource group where the App Service will be deployed</p>
+* **Azure region :** The Azure Region where the resources wil be deployed</p>
 * **namePrefix:** The name prefix which will be used for all the services deployed with this ARM Template</p>
 * **Tenant Name:** The Tenant Name for the authentication TenantNagitme.onmicrosoft.com </p>
 * **Azure Subscription ID for Azure AD:** The Azure Subscription ID associated with the Azure AD used for the authentication </p>
@@ -75,9 +76,9 @@ Those files are called using the following parameters:
 
 For instance:
 
-.\install-webapp-azuread-windows.ps1 TestNodeJSWebAppAzureADrg testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
+.\install-webapp-azuread-windows.ps1 TestNodeJSWebAppAzureADrg eastus2 testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
 
-./install-webapp-azuread-windows.sh TestNodeJSWebAppAzureADrg testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
+./install-webapp-azuread-windows.sh TestNodeJSWebAppAzureADrg eastus2 testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
 
 
 Those scripts required two authentication phases one with the Azure  Subscription ID associated with the Azure AD and one with the Azure Subscription ID associated with the App Service. 

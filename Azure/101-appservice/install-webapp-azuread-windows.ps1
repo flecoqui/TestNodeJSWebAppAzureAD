@@ -1,11 +1,12 @@
 
 #usage install-webapp-azuread-windows.ps1 resourceGroupName prefixName tenantName azureADSubscriptionID azureSubscriptionID webAppSku 
 # az group create -n TestNodeJSWebAppAzureADrg -l eastus2
-# install-webapp-azuread-windows.ps1 TestNodeJSWebAppAzureADrg testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
+# install-webapp-azuread-windows.ps1 TestNodeJSWebAppAzureADrg eastus2 testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
 
 param
 (
       [string]$resourceGroupName = $null,
+      [string]$region = $null,
       [string]$prefixName = $null,
       [string]$tenantName = $null,
       [string]$azureADSubscriptionID = $null,
@@ -26,6 +27,10 @@ if($prefixName -eq $null) {
 if($resourceGroupName -eq $null) {
      WriteLog "Installation failed resourceGroupName parameter not set "
      throw "Installation failed resourceGroupName parameter not set "
+}
+if($region -eq $null) {
+     WriteLog "Installation failed region parameter not set "
+     throw "Installation failed region parameter not set "
 }
 if($tenantName -eq $null) {
      WriteLog "Installation failed Azure AD tenantName parameter not set "
@@ -127,6 +132,9 @@ az login
 WriteLog ("az account set --subscription " +  $azureSubscriptionID)
 az account set --subscription $azureSubscriptionID
 
+WriteLog ("Creating Resource Group: " + $resourceGroupName)
+az group create --subscription $azureSubscriptionID --name $resourceGroupName --location $region --output table
+
 WriteLog ("Installation script is starting for resource group: " + $resourceGroupName + " with prefixName: " + $prefixName )
 WriteLog ("Creating Web App supporting Azure AD Authentication") 
 WriteLog ("az deployment group create -g " + $resourceGroupName + " -n " + $appDeploymentName + " --template-file azuredeploy.json --parameter namePrefix="+$prefixName+" webAppSku="+$webAppSku+" configClientID=" + $appID + " configClientSecret=" + $appPassword + "  configTenantName=" + $tenantName + " configRedirectUrl=" + $appRedirectUri + " configSignOutUrl=" + $appUri + "   --verbose -o json ")
@@ -135,8 +143,6 @@ WriteLog ("az deployment group show -g " + $resourceGroupName + " -n " + $appDep
 az deployment group show -g $resourceGroupName -n $appDeploymentName --query properties.outputs
 
 WriteLog ("Public DNS Name: " +$dnsName) 
-
-writelog ("curl -d '{""name"":""0123456789""}' -H ""Content-Type: application/json""  -X POST   http://" + $dnsName + "/api/values")
 
 writelog ("Open the following url with your browser to test the authentication: https://" + $dnsName + "/")
 
