@@ -264,11 +264,7 @@
   "outputs": {
     "curlCmdAzWeb1": {
       "type": "string",
-      "value": "[concat('curl -d ''{\"name\":\"0123456789\"}'' -H \"Content-Type: application/json\"  -X POST   https://',variables('webAppName'),'.azurewebsites.net/api/values')]"
-    },
-    "curlCmdAzWeb2": {
-      "type": "string",
-      "value": "[concat('curl -H \"Content-Type: application/json\"  -X GET   https://',variables('webAppName'),'.azurewebsites.net/api/test')]"
+      "value": "[concat('curl -H \"Content-Type: application/json\"  -X GET   https://',variables('webAppName'),'.azurewebsites.net/')]"
     }
   }
 }
