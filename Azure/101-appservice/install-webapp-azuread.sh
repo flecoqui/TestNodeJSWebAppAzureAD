@@ -14,7 +14,7 @@ azureADSubscriptionID=$5
 azureSubscriptionID=$6
 webAppSku=$7
 
-# ./install-webapp-azuread.sh TestNodeJSWebAppAzureADrg easus2 testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
+# ./install-webapp-azuread.sh TestNodeJSWebAppAzureADrg eastus2 testnodewebapp M365x175592 faa1b9e5-22ff-4238-8fb5-5a4d73c49d47 e5c9fc83-fbd0-4368-9cb6-1b5823479b6d S1
 
 #######################################################
 #- function used to writelog in a log file
@@ -158,7 +158,7 @@ appDeploymentName=$appName'dep'
 WriteLog "Installation script is starting for resource group: "$resourceGroupName" with prefixName: "$prefixName" azureADSubscriptionID: "$azureADSubscriptionID 
 WriteLog "Login to Azure AD"
 WriteLog "az login"
-az login
+az login  --allow-no-subscriptions
 WriteLog "az account set --subscription "$azureADSubscriptionID
 az account set --subscription $azureADSubscriptionID
 echo  '[{ "additionalProperties": null,"resourceAccess": [{"additionalProperties": null, "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d", "type": "Scope"}],"resourceAppId": "00000003-0000-0000-c000-000000000000"}]' > ./manifestaccess.json

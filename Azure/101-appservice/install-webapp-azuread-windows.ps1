@@ -104,7 +104,7 @@ $appDeploymentName =$appName + "dep"
 WriteLog ("Installation script is starting for resource group: " + $resourceGroupName + " with prefixName: " + $prefixName + " azureADSubscriptionID: " + $azureADSubscriptionID )
 WriteLog ("Login to Azure AD")
 WriteLog ("az login")
-az login
+az login --allow-no-subscriptions
 WriteLog ("az account set --subscription " +  $azureADSubscriptionID)
 az account set --subscription $azureADSubscriptionID
 Write-Output  '[{ "additionalProperties": null,"resourceAccess": [{"additionalProperties": null, "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d", "type": "Scope"}],"resourceAppId": "00000003-0000-0000-c000-000000000000"}]' > ./manifestaccess.json
